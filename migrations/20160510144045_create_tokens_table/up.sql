@@ -1,4 +1,4 @@
 create table tokens (
-    id serial primary key,
+    id bigserial primary key,
     token varchar(240) not null
 )
