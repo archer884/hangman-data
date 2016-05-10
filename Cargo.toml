@@ -1,0 +1,10 @@
+[package]
+name = "hangman-data"
+version = "0.1.0"
+authors = ["J/A <archer884@gmail.com>"]
+
+[dependencies]
+diesel = "*"
+diesel_codegen = { version = "*", default-features = false, features = ["nightly", "postgres"] }
+dotenv = "*"
+dotenv_macros = "*"
