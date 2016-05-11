@@ -28,12 +28,16 @@ pub enum DbError {
 
 // I'm going to return a bool here, indicating success or failure, until I know more about
 // just what it is I actually want.
-pub fn create_token<'a, T: AsRef<NewToken<'a>>>(conn: &PgConnection, token: T) -> bool {
+pub fn create_token<'a, T>(conn: &PgConnection, token: T) -> bool 
+    where T: AsRef<NewToken<'a>>
+{
     use schema::tokens;
     diesel::insert(token.as_ref()).into(tokens::table).execute(conn).is_ok()
 }
 
-pub fn create_game<'a, T: AsRef<NewGame<'a>>>(conn: &PgConnection, game: T) -> bool {
+pub fn create_game<'a, T>(conn: &PgConnection, game: T) -> bool
+    where T: AsRef<NewGame<'a>>
+{
     use schema::games;
     diesel::insert(game.as_ref()).into(games::table).execute(conn).is_ok()
 }
