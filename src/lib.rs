@@ -43,12 +43,12 @@ pub fn create_game<'a, T>(conn: &PgConnection, game: T) -> bool
     diesel::insert(game.as_ref()).into(games::table).execute(conn).is_ok()
 }
 
-pub fn get_token(conn: &PgConnection, id: i64) -> Result<Token, DbError> {
+pub fn get_token(conn: &PgConnection, token_id: i64) -> Result<Token, DbError> {
     use schema::tokens::dsl::*;
-    tokens.find(id).first(conn).map_err(|_| DbError::NotFound)
+    tokens.filter(id.eq(token_id)).first(conn).map_err(|_| DbError::NotFound)
 }
 
-pub fn get_game(conn: &PgConnection, id: i64) -> Result<Game, DbError> {
+pub fn get_game(conn: &PgConnection, game_id: i64) -> Result<Game, DbError> {
     use schema::games::dsl::*;
-    games.find(id).first(conn).map_err(|_| DbError::NotFound)
+    games.filter(id.eq(game_id)).first(conn).map_err(|_| DbError::NotFound)
 }
