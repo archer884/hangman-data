@@ -13,6 +13,11 @@ use diesel::pg::PgConnection;
 use dotenv::dotenv;
 use models::{Game, NewGame, NewToken, Token};
 
+#[derive(Debug)]
+pub enum DbError {
+    NotFound
+}
+
 pub fn connect() -> PgConnection {
     dotenv().ok();
 
@@ -20,10 +25,6 @@ pub fn connect() -> PgConnection {
     PgConnection::establish(&database_url).expect(
         &format!("Error connecting to {}", database_url)
     )
-}
-
-pub enum DbError {
-    NotFound
 }
 
 // I'm going to return a bool here, indicating success or failure, until I know more about

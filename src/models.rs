@@ -1,17 +1,18 @@
 use schema::{games, tokens};
 
-#[derive(Queryable)]
+#[derive(Debug, Queryable)]
 pub struct Token {
     pub id: i64,
     pub token: String,
 }
 
+#[derive(Debug)]
 #[insertable_into(tokens)]
 pub struct NewToken<'a> {
     pub token: &'a str,
 }
 
-#[derive(Queryable)]
+#[derive(Debug, Queryable)]
 pub struct Game {
     pub id: i64,
     pub token_id: i64,
@@ -19,6 +20,7 @@ pub struct Game {
     pub outcome: String,
 }
 
+#[derive(Debug)]
 #[insertable_into(games)]
 pub struct NewGame<'a> {
     pub token_id: i64,
