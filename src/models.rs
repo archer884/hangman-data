@@ -12,6 +12,14 @@ pub struct NewToken<'a> {
     pub token: &'a str,
 }
 
+impl<'a> NewToken<'a> {
+    pub fn new(token: &'a str) -> NewToken<'a> {
+        NewToken {
+            token: token
+        }
+    }
+}
+
 #[derive(Debug, Queryable)]
 pub struct Game {
     pub id: i64,
