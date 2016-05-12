@@ -19,6 +19,7 @@ pub type ServiceResult<T> = Result<T, ServiceError>;
 #[derive(Debug)]
 pub enum ServiceError {
     InsertFailed,
+    UpdateFailed,
     NotFound,
     Other(Box<Error>),
 }
@@ -27,6 +28,7 @@ impl fmt::Display for ServiceError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
             &ServiceError::InsertFailed => write!(f, "Insert failed"),
+            &ServiceError::UpdateFailed => write!(f, "Update failed"),
             &ServiceError::NotFound => write!(f, "Not found"),
             &ServiceError::Other(ref e) => write!(f, "{}", e),
         }
