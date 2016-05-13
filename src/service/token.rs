@@ -33,7 +33,7 @@ impl TokenService for PgTokenService {
             Err(e) => Err(ServiceError::Other(box e)),
         }
     }
-    
+
     fn by_token(&self, token: &str) -> ServiceResult<Token> {
         match dsl::tokens.filter(dsl::token.eq(token)).first(&*self.connection) {
             Ok(token) => Ok(token),
@@ -41,7 +41,7 @@ impl TokenService for PgTokenService {
             Err(e) => Err(ServiceError::Other(box e)),
         }
     }
-    
+
     fn create_token<'a, T>(&self, token: T) -> ServiceResult<()>
         where T: AsRef<NewToken<'a>>
     {

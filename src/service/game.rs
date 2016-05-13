@@ -20,6 +20,7 @@ impl PgGameService {
 
 pub trait GameService {
     fn by_id(&self, id: i64) -> ServiceResult<Game>;
+    fn latest(&self, token: &str) -> ServiceResult<Game>;
     fn create_game<'a, T: AsRef<NewGame<'a>>>(&self, game: T) -> ServiceResult<()>;
     fn update(&self, id: i64, state: &str, outcome: &str) -> ServiceResult<()>;
     fn update_outcome(&self, id: i64, outcome: &str) -> ServiceResult<()>;
@@ -33,6 +34,10 @@ impl GameService for PgGameService {
             Err(DieselError::NotFound) => Err(ServiceError::NotFound),
             Err(e) => Err(ServiceError::Other(box e)),
         }
+    }
+
+    fn latest(&self, token: &str) -> ServiceResult<Game> {
+        unimplemented!()
     }
 
     fn create_game<'a, T: AsRef<NewGame<'a>>>(&self, game: T) -> ServiceResult<()> {
