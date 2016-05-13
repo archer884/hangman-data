@@ -1,12 +1,11 @@
 use std::env;
-use diesel::pg::PgConnection;
 use dotenv::dotenv;
 use r2d2::{Config, Pool};
-use r2d2_diesel::ConnectionManager;
-use service::{GameService, TokenService, PgGameService, PgTokenService};
+use r2d2_postgres::SslMode;
+use service::{ConnectionManager, GameService, TokenService, PgGameService, PgTokenService};
 
 pub struct PgConnectionService {
-    pool: Pool<ConnectionManager<PgConnection>>,
+    pool: Pool<ConnectionManager>,
 }
 
 impl PgConnectionService {
@@ -19,7 +18,9 @@ impl PgConnectionService {
         
         let pool = Pool::new(
             Config::default(),
-            ConnectionManager::new(database_url)
+            ConnectionManager::new(database_url.as_ref(), SslMode::None).expect(
+                "Unable to create connection manager"
+            ),
         ).expect("failed to initialize pool");
         
         PgConnectionService {

@@ -1,0 +1,1 @@
+select * from games g where g.id = $1 limit 1

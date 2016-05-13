@@ -1,0 +1,1 @@
+select * from tokens t where t.id = $1 limit 1

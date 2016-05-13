@@ -1,10 +1,5 @@
-use diesel::prelude::*;
-use diesel::result::Error as DieselError;
-use diesel;
-use models::{Game, NewGame};
-use schema::games::dsl;
-use schema::games;
-use service::{ServiceConnection, ServiceError, ServiceResult};
+use model::{Game, CreateGame, UpdateGame};
+use service::{IntoModel, Page, ServiceConnection, ServiceResult};
 
 pub struct PgGameService {
     connection: ServiceConnection,
@@ -20,66 +15,71 @@ impl PgGameService {
 
 pub trait GameService {
     fn by_id(&self, id: i64) -> ServiceResult<Game>;
+    fn page(&self, token: &str, page: &Page) -> ServiceResult<Vec<Game>>;
     fn latest(&self, token: &str) -> ServiceResult<Game>;
-    fn create_game<'a, T: AsRef<NewGame<'a>>>(&self, game: T) -> ServiceResult<()>;
-    fn update(&self, id: i64, state: &str, outcome: &str) -> ServiceResult<()>;
-    fn update_outcome(&self, id: i64, outcome: &str) -> ServiceResult<()>;
-    fn update_state(&self, id: i64, state: &str) -> ServiceResult<()>;    
+    fn create_game<T>(&self, game: T) -> ServiceResult<u64>
+        where T: CreateGame;
+    fn update<T>(&self, game: T) -> ServiceResult<u64>
+        where T: UpdateGame;
+    fn update_outcome(&self, id: i64, outcome: &str) -> ServiceResult<u64>;
+    fn update_state(&self, id: i64, state: &str) -> ServiceResult<u64>;
 }
 
 impl GameService for PgGameService {
     fn by_id(&self, id: i64) -> ServiceResult<Game> {
-        match dsl::games.filter(dsl::id.eq(id)).first(&*self.connection) {
-            Ok(game) => Ok(game),
-            Err(DieselError::NotFound) => Err(ServiceError::NotFound),
-            Err(e) => Err(ServiceError::Other(box e)),
-        }
+        let sql = include_str!("../../sql/game/by_id.sql");
+        self.connection.query(sql, &[&id])?.single()
+    }
+    
+    fn page(&self, token: &str, page: &Page) -> ServiceResult<Vec<Game>> {
+        let sql = include_str!("../../sql/game/page.sql");
+        Ok(self.connection.query(sql, &[
+            &token,
+            &page.skip(),
+            &page.take(),
+        ])?.multiple())
     }
 
     fn latest(&self, token: &str) -> ServiceResult<Game> {
-        unimplemented!()
+        let sql = include_str!("../../sql/game/latest.sql");
+        self.connection.query(sql, &[&token])?.single()
     }
 
-    fn create_game<'a, T: AsRef<NewGame<'a>>>(&self, game: T) -> ServiceResult<()> {
-        match diesel::insert(game.as_ref()).into(games::table).execute(&*self.connection) {
-            Ok(_) => Ok(()),
-            Err(_) => Err(ServiceError::InsertFailed),
-        }
+    fn create_game<T>(&self, game: T) -> ServiceResult<u64>
+        where T: CreateGame
+    {
+        let sql = include_str!("../../sql/game/create.sql");
+        Ok(self.connection.execute(sql, &[
+            &game.token_id(),
+            &game.state(),
+            &game.outcome(),
+        ])?)
     }
-    
-    fn update(&self, id: i64, game_state: &str, outcome: &str) -> ServiceResult<()> {
-        let result = diesel::update(dsl::games.find(id))
-            .set((
-                dsl::game_state.eq(game_state),
-                dsl::outcome.eq(outcome),
-            ))
-            .execute(&*self.connection);
 
-        match result {
-            Ok(_) => Ok(()),
-            Err(_) => Err(ServiceError::UpdateFailed),
-        }
+    fn update<T>(&self, game: T) -> ServiceResult<u64>
+        where T: UpdateGame
+    {
+        let sql = include_str!("../../sql/game/update.sql");
+        Ok(self.connection.execute(sql, &[
+            &game.id(),
+            &game.state(),
+            &game.outcome(),
+        ])?)
     }
-    
-    fn update_outcome(&self, id: i64, outcome: &str) -> ServiceResult<()> {
-        let result = diesel::update(dsl::games.find(id))
-            .set(dsl::outcome.eq(outcome))
-            .execute(&*self.connection);
 
-        match result {
-            Ok(_) => Ok(()),
-            Err(_) => Err(ServiceError::UpdateFailed),
-        }
+    fn update_outcome(&self, id: i64, outcome: &str) -> ServiceResult<u64> {
+        let sql = include_str!("../../sql/game/update_outcome.sql");
+        Ok(self.connection.execute(sql, &[
+            &id,
+            &outcome
+        ])?)
     }
-    
-    fn update_state(&self, id: i64, state: &str) -> ServiceResult<()> {
-        let result = diesel::update(dsl::games.find(id))
-            .set(dsl::game_state.eq(state))
-            .execute(&*self.connection);
 
-        match result {
-            Ok(_) => Ok(()),
-            Err(_) => Err(ServiceError::UpdateFailed),
-        }
+    fn update_state(&self, id: i64, state: &str) -> ServiceResult<u64> {
+        let sql = include_str!("../../sql/game/update_state.sql");
+        Ok(self.connection.execute(sql, &[
+            &id,
+            &state
+        ])?)
     }
 }

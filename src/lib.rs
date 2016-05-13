@@ -1,12 +1,10 @@
-#![feature(box_syntax, custom_derive, custom_attribute, plugin)]
-#![plugin(diesel_codegen, dotenv_macros)]
+#![feature(box_syntax, plugin, question_mark)]
+#![plugin(dotenv_macros)]
 
-#[macro_use] extern crate diesel;
 extern crate dotenv;
+extern crate postgres;
 extern crate r2d2;
-extern crate r2d2_diesel;
+extern crate r2d2_postgres;
 
-pub mod error;
-pub mod models;
-pub mod schema;
+pub mod model;
 pub mod service;
