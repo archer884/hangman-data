@@ -12,6 +12,8 @@ from tokens t
             (case when g.outcome = 'Loss' then 1 else 0 end) as losses
 
         from games g
-    ) as games g on g.token_id = t.id
+    ) as g on g.token_id = t.id
+
+where t.token = $1
 
 group by t.id, t.token

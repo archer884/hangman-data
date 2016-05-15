@@ -1,6 +1,12 @@
-select g.*
+select 
+    g.id,
+    g.token_id,
+    g.state,
+    g.outcome
+    
 from games g
-    join token t on g.token_id = t.id
+    join tokens t on g.token_id = t.id
+    
 where t.token = $1
 order by g.id
 offset $2

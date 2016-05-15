@@ -83,3 +83,73 @@ impl GameService for PgGameService {
         ])?)
     }
 }
+
+// Note that these function as integration tests, not unit tests
+#[cfg(test)]
+mod tests {
+    use service::{Page, PgConnectionService, ConnectionService, GameService};
+    
+    #[test]
+    fn by_id() {
+        get_service().games().by_id(1).unwrap();
+    }
+    
+    #[test]
+    fn page() {
+        let page = get_service().games().page(
+            "sanford_and_son",
+            &Page::new(0),
+        ).unwrap();
+        
+        assert!(page.len() >= 1);
+    }
+    
+    #[test]
+    fn latest() {
+        get_service().games().latest("sanford_and_son").unwrap();
+    }
+    
+    #[test]
+    #[ignore]
+    fn create() {
+        let rows_affected = get_service().games().create_game((
+            1,
+            "invalid",
+            "Loss",
+        )).unwrap();
+        
+        assert_eq!(1, rows_affected);
+    }
+    
+    #[test]
+    #[ignore]
+    fn update() {
+        let rows_affected = get_service().games().update((
+            1,
+            "Your mom!",
+            "Win",
+        )).unwrap();
+        
+        assert_eq!(1, rows_affected);
+    }
+    
+    #[test]
+    #[ignore]
+    fn update_outcome() {
+        let rows_affected = get_service().games().update_outcome(1, "Loss").unwrap();
+        
+        assert_eq!(1, rows_affected);
+    }
+    
+    #[test]
+    #[ignore]
+    fn update_state() {
+        let rows_affected = get_service().games().update_state(1, "still invalid").unwrap();
+        
+        assert_eq!(1, rows_affected);
+    }
+    
+    fn get_service() -> PgConnectionService {
+        PgConnectionService::new()
+    }
+}

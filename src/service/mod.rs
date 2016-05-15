@@ -19,9 +19,10 @@ pub type ConnectionManager = r2d2_postgres::PostgresConnectionManager;
 pub type ServiceConnection = PooledConnection<ConnectionManager>;
 pub type ServiceResult<T> = Result<T, ServiceError>;
 
+#[derive(Debug)]
 pub enum ServiceError {
     NotFound,
-    BadSchema,
+    BadSchema(Box<Error>),
     DatabaseFailure(Box<Error>),
 }
 
@@ -29,7 +30,7 @@ impl fmt::Display for ServiceError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
             &ServiceError::NotFound => write!(f, "Not found"),
-            &ServiceError::BadSchema => write!(f, "Unable to convert pg type to rust type"),
+            &ServiceError::BadSchema(ref e) => write!(f, "Unable to convert pg type to rust type: {}", e),
             &ServiceError::DatabaseFailure(ref e) => write!(f, "Database failure: {:?}", e),
         }
     }
@@ -40,7 +41,7 @@ impl From<PgError> for ServiceError {
         match error {
             PgError::Db(e) => ServiceError::DatabaseFailure(e),
             PgError::Io(e) => ServiceError::DatabaseFailure(box e),
-            PgError::Conversion(_) => ServiceError::BadSchema,
+            PgError::Conversion(e) => ServiceError::BadSchema(e),
         }
     }
 }
@@ -56,6 +57,9 @@ impl<'a> IntoModel<'a> for Rows<'a> {
     }
     
     fn multiple<T: From<Row<'a>>>(&'a self) -> Vec<T> {
+        if self.is_empty() {
+            return vec![]
+        }
         self.iter().map(Row::into).collect()
     }
 }

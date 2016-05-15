@@ -4,7 +4,7 @@ version = "0.1.0"
 authors = ["J/A <archer884@gmail.com>"]
 
 [dependencies]
-clippy = "0.0.66"
+#clippy = "*"
 dotenv = "*"
 dotenv_macros = "*"
 postgres = "*"

@@ -1,5 +1,5 @@
-update game g
+update games
 set
-    g.state = $2,
-    g.outcome = $3
-where g.id = $1
+    state = $2,
+    outcome = $3
+where id = $1

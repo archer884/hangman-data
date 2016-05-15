@@ -10,6 +10,12 @@ pub trait CreateToken {
     fn token(&self) -> &str;
 }
 
+impl<'a> CreateToken for &'a str {
+    fn token(&self) -> &str {
+        self
+    }
+}
+
 impl<'a> From<Row<'a>> for Token {
     fn from(row: Row) -> Token {
         Token {

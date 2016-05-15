@@ -1,4 +1,4 @@
-update game g
+update games
 set
-    g.outcome = $2
-where g.id = $1
+    outcome = $2
+where id = $1

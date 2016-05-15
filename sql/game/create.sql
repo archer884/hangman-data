@@ -1,1 +1,1 @@
-insert into games (token_id, game_state, outcome ) values ($1, $2, $3)
+insert into games (token_id, state, outcome ) values ($1, $2, $3)

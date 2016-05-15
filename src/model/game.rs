@@ -14,10 +14,38 @@ pub trait CreateGame {
     fn outcome(&self) -> &str;
 }
 
+impl<T: AsRef<str>> CreateGame for (i64, T, T) {
+    fn token_id(&self) -> i64 {
+        self.0
+    }
+    
+    fn state(&self) -> &str {
+        self.1.as_ref()
+    }
+    
+    fn outcome(&self) -> &str {
+        self.2.as_ref()
+    }
+}
+
 pub trait UpdateGame {
     fn id(&self) -> i64;
     fn state(&self) -> &str;
     fn outcome(&self) -> &str;
+}
+
+impl<T: AsRef<str>> UpdateGame for (i64, T, T) {
+    fn id(&self) -> i64 {
+        self.0
+    }
+    
+    fn state(&self) -> &str {
+        self.1.as_ref()
+    }
+    
+    fn outcome(&self) -> &str {
+        self.2.as_ref()
+    }
 }
 
 impl<'a> From<Row<'a>> for Game {
