@@ -46,6 +46,16 @@ impl From<PgError> for ServiceError {
     }
 }
 
+impl Error for ServiceError {
+    fn description(&self) -> &str {
+        match self {
+            &ServiceError::NotFound => "Entity not found by identifier",
+            &ServiceError::BadSchema(_) => "Unable to convert from db schema to entity",
+            &ServiceError::DatabaseFailure(_) => "Underlying database failure",
+        }
+    }
+}
+
 pub trait IntoModel<'a> {
     fn single<T: From<Row<'a>>>(&'a self) -> ServiceResult<T>;
     fn multiple<T: From<Row<'a>>>(&'a self) -> Vec<T>;
