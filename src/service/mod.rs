@@ -22,8 +22,8 @@ pub type ServiceResult<T> = Result<T, ServiceError>;
 #[derive(Debug)]
 pub enum ServiceError {
     NotFound,
-    BadSchema(Box<Error>),
-    DatabaseFailure(Box<Error>),
+    BadSchema(Box<Error + Send>),
+    DatabaseFailure(Box<Error + Send>),
 }
 
 impl fmt::Display for ServiceError {
