@@ -17,7 +17,7 @@ pub trait TokenService {
     fn by_id(&self, id: i64) -> ServiceResult<Token>;
     fn by_token(&self, token: &str) -> ServiceResult<Token>;
     fn record(&self, token: &str) -> ServiceResult<Record>;
-    fn create<T>(&self, token: T) -> ServiceResult<u64>
+    fn create<T>(&self, token: T) -> ServiceResult<i64>
         where T: CreateToken;
 }
 
@@ -37,13 +37,11 @@ impl TokenService for PgTokenService {
         self.connection.query(sql, &[&token])?.single()
     }
 
-    fn create<T>(&self, token: T) -> ServiceResult<u64>
+    fn create<T>(&self, token: T) -> ServiceResult<i64>
         where T: CreateToken
     {
         let sql = include_str!("../../sql/token/create.sql");
-        Ok(self.connection.execute(sql, &[
-            &token.token()
-        ])?)
+        self.connection.query(sql, &[&token.token()])?.id()
     }
 }
 

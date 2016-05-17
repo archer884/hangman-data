@@ -1,1 +1,1 @@
-insert into tokens (token) values ($1)
+insert into tokens (token) values ($1) returning id

@@ -57,11 +57,17 @@ impl Error for ServiceError {
 }
 
 pub trait IntoModel<'a> {
+    fn id(&'a self) -> ServiceResult<i64>;
     fn single<T: From<Row<'a>>>(&'a self) -> ServiceResult<T>;
     fn multiple<T: From<Row<'a>>>(&'a self) -> Vec<T>;
 }
 
 impl<'a> IntoModel<'a> for Rows<'a> {
+    fn id(&'a self) -> ServiceResult<i64> {
+        let row = self.iter().next().unwrap();
+        Ok(row.get(0))
+    }
+    
     fn single<T: From<Row<'a>>>(&'a self) -> ServiceResult<T> {
         self.iter().map(Row::into).next().ok_or(ServiceError::NotFound)
     }
