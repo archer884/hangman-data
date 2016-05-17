@@ -1,8 +1,4 @@
-select 
-    g.id,
-    g.token_id,
-    g.state,
-    g.outcome
+select *
     
 from games g
     join tokens t on g.token_id = t.id

@@ -8,7 +8,7 @@ from tokens t
     join (
         select
             g.token_id,
-            (case when g.outcome = 'Won' then 1 else 0 end) as wins,
+            (case when g.outcome = 'Win' then 1 else 0 end) as wins,
             (case when g.outcome = 'Loss' then 1 else 0 end) as losses
 
         from games g
