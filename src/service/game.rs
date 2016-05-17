@@ -17,7 +17,7 @@ pub trait GameService {
     fn by_id(&self, id: i64) -> ServiceResult<Game>;
     fn page(&self, token: &str, page: &Page) -> ServiceResult<Vec<Game>>;
     fn latest(&self, token: &str) -> ServiceResult<Game>;
-    fn create<T>(&self, game: T) -> ServiceResult<u64>
+    fn create<T>(&self, game: T) -> ServiceResult<i64>
         where T: CreateGame;
     fn update<T>(&self, game: T) -> ServiceResult<u64>
         where T: UpdateGame;
@@ -45,15 +45,15 @@ impl GameService for PgGameService {
         self.connection.query(sql, &[&token])?.single()
     }
 
-    fn create<T>(&self, game: T) -> ServiceResult<u64>
+    fn create<T>(&self, game: T) -> ServiceResult<i64>
         where T: CreateGame
     {
         let sql = include_str!("../../sql/game/create.sql");
-        Ok(self.connection.execute(sql, &[
+        self.connection.query(sql, &[
             &game.token_id(),
             &game.state(),
             &game.difficulty(),
-        ])?)
+        ])?.id()
     }
 
     fn update<T>(&self, game: T) -> ServiceResult<u64>
