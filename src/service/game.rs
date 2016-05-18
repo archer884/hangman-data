@@ -50,7 +50,7 @@ impl GameService for PgGameService {
     {
         let sql = include_str!("../../sql/game/create.sql");
         self.connection.query(sql, &[
-            &game.token_id(),
+            &game.token(),
             &game.state(),
             &game.difficulty(),
         ])?.id()
@@ -113,7 +113,7 @@ mod tests {
     #[ignore]
     fn create() {
         let rows_affected = get_service().games().create((
-            1,
+            "sanford_and_son",
             "invalid",
             "Easy",
         )).unwrap();

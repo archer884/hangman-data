@@ -11,14 +11,14 @@ pub struct Game {
 }
 
 pub trait CreateGame {
-    fn token_id(&self) -> i64;
+    fn token(&self) -> &str;
     fn state(&self) -> &str;
     fn difficulty(&self) -> &str;
 }
 
-impl<T: AsRef<str>> CreateGame for (i64, T, T) {
-    fn token_id(&self) -> i64 {
-        self.0
+impl<T: AsRef<str>> CreateGame for (T, T, T) {
+    fn token(&self) -> &str {
+        self.0.as_ref()
     }
     
     fn state(&self) -> &str {
